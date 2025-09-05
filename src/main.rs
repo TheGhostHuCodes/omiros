@@ -1,0 +1,54 @@
+use std::{fs, path::PathBuf};
+
+use clap::Parser;
+
+use omiros::{
+    brew::{
+        check_brew_installed, find_missing_packages, get_installed_brew_packages,
+        install_missing_packages,
+    },
+    dotfiles::setup_dotfiles,
+    mas::{check_mas_installed, find_missing_apps, get_installed_apps, install_missing_apps},
+    rustup::install_rustup,
+    system::System,
+};
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    /// Path to the directory containing the system.toml file.
+    #[arg(short, long)]
+    system_config_dir: PathBuf,
+
+    /// Path to the dotfiles directory.
+    #[arg(short, long)]
+    dotfiles_dir: PathBuf,
+}
+
+fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+
+    let system_config_path = cli.system_config_dir.join("system.toml");
+    let system_config = fs::read_to_string(system_config_path)?;
+    let system: System = toml::from_str(&system_config)?;
+
+    check_brew_installed()?;
+    let installed_packages = get_installed_brew_packages()?;
+    let missing_packages = find_missing_packages(&system.brew, &installed_packages);
+    install_missing_packages(&missing_packages)?;
+
+    check_mas_installed()?;
+    let installed_apps = get_installed_apps()?;
+    let missing_apps = find_missing_apps(&system.mas, &installed_apps);
+    install_missing_apps(&missing_apps)?;
+
+    install_rustup()?;
+
+    if let Some(dotfiles) = system.dotfiles {
+        setup_dotfiles(&dotfiles, &cli.dotfiles_dir)?;
+    } else {
+        println!("ℹ️  No `[dotfiles]` block in configuration file");
+    }
+
+    Ok(())
+}

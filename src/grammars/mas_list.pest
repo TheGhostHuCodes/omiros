@@ -1,0 +1,16 @@
+record = { app_id ~ app_name ~ app_version }
+
+// All digits, there should be at least one, but not sure how many there will
+// be. We prepend SOI because the AppID is the first item in the line, so SOI is
+// a significant attribute of the rule.
+app_id = { SOI ~ ASCII_DIGIT+ }
+
+app_name = @{ ( !app_version ~ ANY)+ }
+
+// App versions are either `MAJOR`, `MAJOR.MINOR`, or `MAJOR.MINOR.PATCH`
+// surrounded by parentheses. We append EOI because the app_version is the last
+// item on the line that looks like this. That means in between these two items,
+// the app_name could be anything.
+app_version = @{ "(" ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+){0,2} ~ ")" ~ EOI }
+
+WHITESPACE = _{ " " }

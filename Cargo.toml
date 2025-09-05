@@ -1,0 +1,16 @@
+[package]
+name = "omiros"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.99"
+clap = { version = "4.5.47", features = ["derive"] }
+pest = "2.8.1"
+pest_derive = "2.8.1"
+serde = { version = "1.0.203", features = ["derive"] }
+thiserror = "2.0.14"
+toml = "0.8.13"
+
+[dev-dependencies]
+rstest = "0.26.1"
