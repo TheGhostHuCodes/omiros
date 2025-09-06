@@ -1,0 +1,2 @@
+[build]
+rustflags = ["-Dclippy::dbg_macro"]
