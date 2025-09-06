@@ -70,7 +70,7 @@ It currently supports:
     └── system.toml
     ```
 
-    This is a great directory to track under verison control.
+    This is a great directory to track under version control.
 
 3.  **Run the application:**
 
@@ -90,18 +90,18 @@ The tool will then check for missing packages and applications and install them,
 **tldr;** Cuz I'm too dumb to use Nix, but nothing else comes close!
 
 Many years ago I wrote a tool like this in Python to help set up my own personal
-machines. It worked, but I was alwasy on the lookout for something better.
+machines. It worked, but I was always on the lookout for something better.
 
 That's when I discovered Ansible. I thought, that's a cool sci-fi inspired name.
 At the time I was also getting into configuration management systems at work to
 set up large batches of test machines. So it seemed like a reasonable thing to
-try and convert my Python script to be a declaritive Ansible playbook. That also
+try and convert my Python script to be a declarative Ansible playbook. That also
 worked, but Ansible is a pretty large hammer for this particular nail. Ansible
 is great at setting up a lot of the same machines over as short period of time,
 not a single machine one at a time over long periods of time, and I was
 discovering that each time I went back to run my ansible playbook, I'd have to
 tinker with it to get it to work again. I wasn't setting up new personal
-machines at a fast enough cadance to pay back my investment in keeping my
+machines at a fast enough cadence to pay back my investment in keeping my
 Ansible playbook up-to-date.
 
 Having come to that realization, I decided to start over, this time writing the
@@ -121,7 +121,7 @@ side on-and-off for a few years at this point. Mostly learning about the
 language and reading about the theory behind this very particular package
 manager. At some point I got a new computer and I decided this is my chance!
 Finally, I would figure out how to use Nix (both the language and the package
-manager) to declaritively and reproducibly generate / maintain my development
+manager) to declaratively and reproducibly generate / maintain my development
 environment. This is not a decision to be taken lightly. One does not simply
 walk into using Nix; it permeates through everything that you do on your
 computer. It's a completely different way of thinking. When it worked, it was
@@ -158,3 +158,4 @@ will be the last time. Maybe...
 
 - Support setting macOS settings like what is done in `nix-darwin`.
 - Support `apt` package manager on Linux machines.
+- Support `vscode` extensions setup
