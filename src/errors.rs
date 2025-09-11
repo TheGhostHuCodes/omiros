@@ -5,7 +5,7 @@ pub enum SetupError {
     #[error("Brew not found")]
     BrewNotFound,
     /// Indicates that a required program is not installed or not found in the system's PATH.
-    #[error("Program not found")]
+    #[error("Program not found: {0}")]
     ProgramFileNotFound(String),
     /// Indicates that a Homebrew package installation failed.
     #[error("Failed to install brew package")]
@@ -17,7 +17,7 @@ pub enum SetupError {
     #[error("Installation failed: {0}")]
     InstallFailed(String),
     /// Generic error setting up Dotfiles.
-    #[error("Error setting up dotfiles")]
+    #[error("Error setting up dotfiles:\n{0}")]
     DotfileError(String),
     /// IO error.
     #[error("IO error: {0}")]

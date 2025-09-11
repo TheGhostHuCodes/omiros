@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::{brew::Brew, dotfiles::Dotfiles, mas::Mas};
+use crate::{brew::Brew, dotfiles::Dotfiles, mas::Mas, vscode::Vscode};
 
 /// Represents the entire system configuration, including all package managers,
 /// and dotfiles.
@@ -12,4 +12,6 @@ pub struct System {
     pub mas: Mas,
     /// The Dotfiles configuration.
     pub dotfiles: Option<Dotfiles>,
+    /// The VS Code configuration.
+    pub vscode: Option<Vscode>,
 }

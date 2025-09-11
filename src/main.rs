@@ -50,5 +50,11 @@ fn main() -> anyhow::Result<()> {
         println!("ℹ️  No `[dotfiles]` block in configuration file");
     }
 
+    if let Some(vscode) = system.vscode {
+        vscode.install_missing_extensions()?;
+    } else {
+        println!("ℹ️  No `[vscode]` block in configuration file");
+    }
+
     Ok(())
 }
