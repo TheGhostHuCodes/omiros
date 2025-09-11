@@ -10,6 +10,7 @@ It currently supports:
 
 - Installing Homebrew formulae and casks.
 - Installing Mac App Store applications using `mas`.
+- Installing VSCode extensions.
 - Symlinking dotfiles from a specified `dotfiles/` directory to wherever you
   need.
 
@@ -47,6 +48,17 @@ It currently supports:
         # dotfiles directory, and the `link` path can be anywhere you want, but
         # I'm partial to XDG-compliant configuration paths.
         { original = ".config/git/config", link = "~/.gitconfig" }
+    ]
+
+    [vscode]
+    extensions = [
+
+        # Extension names can be found under "Unique Identifier" in the "More
+        # Info" section of the extension Marketplace. For example VSCodeVim can
+        # be found here:
+        # https://marketplace.visualstudio.com/items?itemName=vscodevim.vim
+        "vscodevim.vim",
+        "rust-lang.rust-analyzer"
     ]
     ```
 
@@ -158,4 +170,3 @@ will be the last time. Maybe...
 
 - Support setting macOS settings like what is done in `nix-darwin`.
 - Support `apt` package manager on Linux machines.
-- Support `vscode` extensions setup
