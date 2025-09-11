@@ -1,2 +1,2 @@
 [build]
-rustflags = ["-Dclippy::dbg_macro"]
+rustflags = ["-Dclippy::dbg_macro", "-Dwarnings"]
