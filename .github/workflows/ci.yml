@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - '**'   # match all branches
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ubuntu-build:
+    name: Linux Build
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Show runner info
+        run: |
+          echo "System info:"
+          uname -a
+          echo
+          echo "Rust toolchain versions:"
+          rustup show
+          rustc --version
+          cargo --version
+          rustfmt --version || true
+          cargo clippy --version || true
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Cargo check
+        run: cargo check --all --all-targets
+
+      - name: Cargo fmt
+        run: cargo fmt --all -- --check
+
+      - name: Cargo clippy
+        run: cargo clippy --all-targets --all-features
+
+      - name: Cargo build (debug)
+        run: cargo build --all --all-targets
+
+      - name: Cargo test (debug)
+        run: cargo test --all --all-targets
+
+      - name: Cargo doc
+        run: cargo doc --no-deps --document-private-items
+
+      - name: Cargo build (release)
+        run: cargo build --release --all-targets
+
+      - name: Cargo test (release)
+        run: cargo test --release --all --all-targets
+
+  macos-build:
+    name: macOS Build
+    # Only run if ubuntu-build succeeds.
+    needs: ubuntu-build
+    runs-on: macos-15
+
+    steps:
+      - name: Show runner info
+        run: |
+          echo "System info:"
+          uname -a
+          echo
+          echo "Rust toolchain versions:"
+          rustup show
+          rustc --version
+          cargo --version
+          rustfmt --version || true
+          cargo clippy --version || true
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Only do build & test on macOS
+      - name: Cargo test
+        run: cargo test --all --all-targets
+
+      - name: Cargo build (release)
+        run: cargo build --release --all-targets
