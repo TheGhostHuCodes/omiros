@@ -45,7 +45,7 @@ fn main() -> anyhow::Result<()> {
     install_rustup()?;
 
     if let Some(dotfiles) = system.dotfiles {
-        setup_dotfiles(&dotfiles, &cli.dotfiles_dir)?;
+        setup_dotfiles(&dotfiles, &cli.dotfiles_dir.canonicalize()?)?;
     } else {
         println!("ℹ️  No `[dotfiles]` block in configuration file");
     }
