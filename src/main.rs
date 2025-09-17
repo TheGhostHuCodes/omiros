@@ -8,6 +8,7 @@ use omiros::{
         install_missing_packages,
     },
     dotfiles::setup_dotfiles,
+    macos,
     mas::{check_mas_installed, find_missing_apps, get_installed_apps, install_missing_apps},
     rustup::install_rustup,
     system::System,
@@ -54,6 +55,17 @@ fn main() -> anyhow::Result<()> {
         vscode.install_missing_extensions()?;
     } else {
         println!("ℹ️  No `[vscode]` block in configuration file");
+    }
+
+    if let Some(macos) = system.macos {
+        if let Some(dock) = macos.dock {
+            macos::apply_dock_settings(&dock)?;
+        }
+        if let Some(safari) = macos.safari {
+            macos::apply_safari_settings(&safari)?;
+        }
+    } else {
+        println!("ℹ️  No `[macos]` block in configuration file");
     }
 
     Ok(())

@@ -20,3 +20,5 @@ mod system_utils;
 /// Contains logic for interacting with vscode extensions through the `code`
 /// commandline tool.
 pub mod vscode;
+/// Contains the logic for configuring macOS settings.
+pub mod macos;

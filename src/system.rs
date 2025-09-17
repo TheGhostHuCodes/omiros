@@ -1,6 +1,12 @@
 use serde::Deserialize;
 
-use crate::{brew::Brew, dotfiles::Dotfiles, mas::Mas, vscode::Vscode};
+use crate::{
+    brew::Brew,
+    dotfiles::Dotfiles,
+    macos::{Dock, Safari},
+    mas::Mas,
+    vscode::Vscode,
+};
 
 /// Represents the entire system configuration, including all package managers,
 /// and dotfiles.
@@ -14,4 +20,12 @@ pub struct System {
     pub dotfiles: Option<Dotfiles>,
     /// The VS Code configuration.
     pub vscode: Option<Vscode>,
+    /// The macOS configuration.
+    pub macos: Option<MacOS>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MacOS {
+    pub dock: Option<Dock>,
+    pub safari: Option<Safari>,
 }
