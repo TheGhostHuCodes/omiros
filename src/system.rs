@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::{
     brew::Brew,
     dotfiles::Dotfiles,
-    macos::{Dock, Safari},
+    macos::{Dock, Safari, SystemSettings},
     mas::Mas,
     vscode::Vscode,
 };
@@ -28,4 +28,5 @@ pub struct System {
 pub struct MacOS {
     pub dock: Option<Dock>,
     pub safari: Option<Safari>,
+    pub system: Option<SystemSettings>,
 }

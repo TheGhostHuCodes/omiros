@@ -9,6 +9,8 @@ pub mod brew;
 pub mod dotfiles;
 /// Defines the custom error types for the application.
 pub mod errors;
+/// Contains the logic for configuring macOS settings.
+pub mod macos;
 /// Contains the logic for interacting with the Mac App Store commandline tool.
 pub mod mas;
 /// Logic for setting up `rustup`.
@@ -20,5 +22,3 @@ mod system_utils;
 /// Contains logic for interacting with vscode extensions through the `code`
 /// commandline tool.
 pub mod vscode;
-/// Contains the logic for configuring macOS settings.
-pub mod macos;

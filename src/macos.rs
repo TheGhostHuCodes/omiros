@@ -16,6 +16,14 @@ pub struct Safari {
     pub show_full_url: Option<bool>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct SystemSettings {
+    #[serde(rename = "show-file-extensions")]
+    pub show_file_extensions: Option<bool>,
+    #[serde(rename = "weird-mac-scrolling")]
+    pub natural_scrolling: Option<bool>,
+}
+
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum DockOrientation {
@@ -47,22 +55,22 @@ pub enum MacOSError {
 pub fn apply_dock_settings(dock: &Dock) -> Result<(), MacOSError> {
     let mut changed = false;
 
-    if let Some(orientation) = &dock.orientation {
-        if set_dock_orientation(orientation)? {
-            changed = true;
-        }
+    if let Some(orientation) = &dock.orientation
+        && set_dock_orientation(orientation)?
+    {
+        changed = true;
     }
 
-    if let Some(autohide) = dock.autohide {
-        if set_dock_autohide(autohide)? {
-            changed = true;
-        }
+    if let Some(autohide) = dock.autohide
+        && set_dock_autohide(autohide)?
+    {
+        changed = true;
     }
 
-    if let Some(icon_size) = dock.icon_size {
-        if set_dock_icon_size(icon_size)? {
-            changed = true;
-        }
+    if let Some(icon_size) = dock.icon_size
+        && set_dock_icon_size(icon_size)?
+    {
+        changed = true;
     }
 
     if changed {
@@ -76,10 +84,10 @@ pub fn apply_dock_settings(dock: &Dock) -> Result<(), MacOSError> {
 pub fn apply_safari_settings(safari: &Safari) -> Result<(), MacOSError> {
     let mut changed = false;
 
-    if let Some(show_full_url) = safari.show_full_url {
-        if set_safari_show_full_url(show_full_url)? {
-            changed = true;
-        }
+    if let Some(show_full_url) = safari.show_full_url
+        && set_safari_show_full_url(show_full_url)?
+    {
+        changed = true;
     }
 
     if changed {
@@ -90,11 +98,35 @@ pub fn apply_safari_settings(safari: &Safari) -> Result<(), MacOSError> {
     Ok(())
 }
 
+pub fn apply_system_settings(system: &SystemSettings) -> Result<(), MacOSError> {
+    let mut changed = false;
+
+    if let Some(show_file_extensions) = system.show_file_extensions
+        && set_system_show_file_extensions(show_file_extensions)?
+    {
+        changed = true;
+    }
+
+    if let Some(natural_scrolling) = system.natural_scrolling {
+        set_system_natural_scrolling(natural_scrolling)?;
+        // System restart required.
+    }
+
+    if changed {
+        println!("Restarting Finder to apply changes...");
+        Command::new("killall").arg("Finder").status()?;
+    }
+
+    Ok(())
+}
+
 fn get_dock_orientation() -> Result<DockOrientation, MacOSError> {
     let output = Command::new("defaults")
         .args(["read", "com.apple.dock", "orientation"])
         .output()?;
-    let orientation_str = String::from_utf8_lossy(&output.stdout).trim().to_lowercase();
+    let orientation_str = String::from_utf8_lossy(&output.stdout)
+        .trim()
+        .to_lowercase();
     match orientation_str.as_str() {
         "left" => Ok(DockOrientation::Left),
         "bottom" => Ok(DockOrientation::Bottom),
@@ -133,7 +165,9 @@ fn get_dock_autohide() -> Result<bool, MacOSError> {
     let output = Command::new("defaults")
         .args(["read", "com.apple.dock", "autohide"])
         .output()?;
-    let autohide_str = String::from_utf8_lossy(&output.stdout).trim().to_lowercase();
+    let autohide_str = String::from_utf8_lossy(&output.stdout)
+        .trim()
+        .to_lowercase();
     match autohide_str.as_str() {
         "1" | "true" => Ok(true),
         "0" | "false" => Ok(false),
@@ -238,9 +272,95 @@ fn set_safari_show_full_url(show_full_url: bool) -> Result<bool, MacOSError> {
             Err(MacOSError::WriteError)
         }
     } else {
+        println!("Safari show full URL is already set to '{}'", show_full_url);
+        Ok(false)
+    }
+}
+
+fn get_system_show_file_extensions() -> Result<bool, MacOSError> {
+    let output = Command::new("defaults")
+        .args(["read", "NSGlobalDomain", "AppleShowAllExtensions"])
+        .output()?;
+    let show_file_extensions_str = String::from_utf8_lossy(&output.stdout)
+        .trim()
+        .to_lowercase();
+    match show_file_extensions_str.as_str() {
+        "1" | "true" => Ok(true),
+        "0" | "false" => Ok(false),
+        _ => Err(MacOSError::ParseError),
+    }
+}
+
+fn set_system_show_file_extensions(show_file_extensions: bool) -> Result<bool, MacOSError> {
+    let current_show_file_extensions = get_system_show_file_extensions()?;
+    if current_show_file_extensions != show_file_extensions {
         println!(
-            "Safari show full URL is already set to '{}'",
-            show_full_url
+            "Setting system show file extensions to '{}'",
+            show_file_extensions
+        );
+        let status = Command::new("defaults")
+            .args([
+                "write",
+                "NSGlobalDomain",
+                "AppleShowAllExtensions",
+                "-bool",
+                &show_file_extensions.to_string(),
+            ])
+            .status()?;
+
+        if status.success() {
+            println!("System show file extensions to '{}'", show_file_extensions);
+            Ok(true)
+        } else {
+            Err(MacOSError::WriteError)
+        }
+    } else {
+        println!(
+            "System show file extensions is already set to '{}'",
+            show_file_extensions
+        );
+        Ok(false)
+    }
+}
+
+fn get_system_natural_scrolling() -> Result<bool, MacOSError> {
+    let output = Command::new("defaults")
+        .args(["read", "NSGlobalDomain", "com.apple.swipescrolldirection"])
+        .output()?;
+    let natural_scrolling_str = String::from_utf8_lossy(&output.stdout)
+        .trim()
+        .to_lowercase();
+    match natural_scrolling_str.as_str() {
+        "1" | "true" => Ok(true),
+        "0" | "false" => Ok(false),
+        _ => Err(MacOSError::ParseError),
+    }
+}
+
+fn set_system_natural_scrolling(natural_scrolling: bool) -> Result<bool, MacOSError> {
+    let current_natural_scrolling = get_system_natural_scrolling()?;
+    if current_natural_scrolling != natural_scrolling {
+        println!("Setting system natural scrolling '{}'", natural_scrolling);
+        let status = Command::new("defaults")
+            .args([
+                "write",
+                "NSGlobalDomain",
+                "com.apple.swipescrolldirection",
+                "-bool",
+                &natural_scrolling.to_string(),
+            ])
+            .status()?;
+
+        if status.success() {
+            println!("System natural scrolling to '{}'", natural_scrolling);
+            Ok(true)
+        } else {
+            Err(MacOSError::WriteError)
+        }
+    } else {
+        println!(
+            "System natural scrolling is already set to '{}'",
+            natural_scrolling
         );
         Ok(false)
     }

@@ -64,6 +64,9 @@ fn main() -> anyhow::Result<()> {
         if let Some(safari) = macos.safari {
             macos::apply_safari_settings(&safari)?;
         }
+        if let Some(system) = macos.system {
+            macos::apply_system_settings(&system)?;
+        }
     } else {
         println!("ℹ️  No `[macos]` block in configuration file");
     }

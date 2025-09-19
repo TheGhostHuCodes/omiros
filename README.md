@@ -52,7 +52,6 @@ It currently supports:
 
     [vscode]
     extensions = [
-
         # Extension names can be found under "Unique Identifier" in the "More
         # Info" section of the extension Marketplace. For example VSCodeVim can
         # be found here:
@@ -168,5 +167,4 @@ will be the last time. Maybe...
 
 ## Future Plans
 
-- Support setting macOS settings like what is done in `nix-darwin`.
 - Support `apt` package manager on Linux machines.
