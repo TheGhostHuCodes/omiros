@@ -13,9 +13,9 @@ use crate::{
 #[derive(Deserialize, Debug)]
 pub struct System {
     /// The Homebrew configuration.
-    pub brew: Brew,
+    pub brew: Option<Brew>,
     /// The Mac App Store configuration.
-    pub mas: Mas,
+    pub mas: Option<Mas>,
     /// The Dotfiles configuration.
     pub dotfiles: Option<Dotfiles>,
     /// The VS Code configuration.

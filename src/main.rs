@@ -33,15 +33,23 @@ fn main() -> anyhow::Result<()> {
     let system_config = fs::read_to_string(system_config_path)?;
     let system: System = toml::from_str(&system_config)?;
 
-    check_brew_installed()?;
-    let installed_packages = get_installed_brew_packages()?;
-    let missing_packages = find_missing_packages(&system.brew, &installed_packages);
-    install_missing_packages(&missing_packages)?;
+    if let Some(brew) = system.brew {
+        check_brew_installed()?;
+        let installed_packages = get_installed_brew_packages()?;
+        let missing_packages = find_missing_packages(&brew, &installed_packages);
+        install_missing_packages(&missing_packages)?;
+    } else {
+        println!("ℹ️  No `[brew]` block in configuration file");
+    }
 
-    check_mas_installed()?;
-    let installed_apps = get_installed_apps()?;
-    let missing_apps = find_missing_apps(&system.mas, &installed_apps);
-    install_missing_apps(&missing_apps)?;
+    if let Some(mas) = system.mas {
+        check_mas_installed()?;
+        let installed_apps = get_installed_apps()?;
+        let missing_apps = find_missing_apps(&mas, &installed_apps);
+        install_missing_apps(&missing_apps)?;
+    } else {
+        println!("ℹ️  No `[mas]` block in configuration file");
+    }
 
     install_rustup()?;
 
