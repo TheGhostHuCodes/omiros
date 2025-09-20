@@ -4,6 +4,8 @@ use std::{collections::HashSet, ops::Deref, process::Command};
 
 use crate::{errors::SetupError, system_utils::command};
 
+/// Represents the VS Code configuration, specifying which extensions to
+/// install.
 #[derive(Deserialize, Debug)]
 pub struct Vscode {
     pub extensions: Vec<ExtensionIdentifier>,

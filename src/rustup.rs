@@ -2,6 +2,7 @@ use std::process::Command;
 
 use crate::{errors::SetupError, system_utils::command};
 
+/// Installs `rustup`, the Rust toolchain installer.
 pub fn install_rustup() -> Result<(), SetupError> {
     println!("🦀 Installing rustup...");
     let rustup_path = command("rustup")?;

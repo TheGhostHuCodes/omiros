@@ -13,6 +13,8 @@ It currently supports:
 - Installing VSCode extensions.
 - Symlinking dotfiles from a specified `dotfiles/` directory to wherever you
   need.
+- Setting some macOS system configuration, pretty much the ones that I care
+  about.
 
 ## Getting Started
 
@@ -59,6 +61,19 @@ It currently supports:
         "vscodevim.vim",
         "rust-lang.rust-analyzer"
     ]
+
+    [macos.dock]
+    orientation = "left"
+    autohide = true
+    icon-size = 48
+
+    [macos.safari]
+    show-full-url = true
+
+    [macos.system]
+    show-file-extensions = true
+    # Set scrolling to "natural", like an animal.
+    weird-mac-scrolling = true
     ```
 
 2.  **Organize your dotfiles:**

@@ -5,6 +5,8 @@
 
 /// Contains the logic for interacting with Homebrew.
 pub mod brew;
+/// Contains the logic for interacting with the `defaults` commandline tool.
+mod defaults;
 /// Contains the logic for working with dotfiles.
 pub mod dotfiles;
 /// Defines the custom error types for the application.

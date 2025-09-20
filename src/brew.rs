@@ -79,6 +79,7 @@ pub fn check_brew_installed() -> Result<(), SetupError> {
     Ok(())
 }
 
+/// Installs the missing Homebrew packages.
 pub fn install_missing_packages(missing: &MissingBrewPackages) -> Result<(), SetupError> {
     for formula in &missing.formulae {
         println!("Installing formula: {formula}");

@@ -24,6 +24,7 @@ pub struct System {
     pub macos: Option<MacOS>,
 }
 
+/// Represents all macOS-specific configuration.
 #[derive(Deserialize, Debug)]
 pub struct MacOS {
     pub dock: Option<Dock>,

@@ -43,6 +43,8 @@ fn tilde_expand_path(path: &Path, home: &Path) -> Result<PathBuf, SetupError> {
     Ok(expanded)
 }
 
+/// Sets up the dotfiles by creating symlinks from the specified dotfiles
+/// directory to the home directory.
 pub fn setup_dotfiles(dotfiles: &Dotfiles, dotfiles_dir: &Path) -> Result<(), SetupError> {
     println!("🔗 Setting up dotfiles...");
 
