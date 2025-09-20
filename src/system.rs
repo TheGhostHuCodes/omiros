@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::{
     brew::Brew,
     dotfiles::Dotfiles,
-    macos::{Dock, Safari, SystemSettings},
+    macos::{Dock, MissionControl, Safari, SystemSettings},
     mas::Mas,
     vscode::Vscode,
 };
@@ -30,4 +30,6 @@ pub struct MacOS {
     pub dock: Option<Dock>,
     pub safari: Option<Safari>,
     pub system: Option<SystemSettings>,
+    #[serde(rename = "mission-control")]
+    pub mission_control: Option<MissionControl>,
 }

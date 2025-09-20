@@ -66,9 +66,18 @@ fn main() -> anyhow::Result<()> {
     }
 
     if let Some(macos) = system.macos {
-        if let Some(dock) = macos.dock {
-            macos::apply_dock_settings(&dock)?;
+        let mut dock_changed = false;
+        if let Some(dock) = &macos.dock {
+            dock_changed |= macos::apply_dock_settings(dock)?;
         }
+        if let Some(mission_control) = &macos.mission_control {
+            dock_changed |= macos::apply_mission_control_settings(mission_control)?;
+        }
+
+        if dock_changed {
+            macos::restart_dock()?;
+        }
+
         if let Some(safari) = macos.safari {
             macos::apply_safari_settings(&safari)?;
         }

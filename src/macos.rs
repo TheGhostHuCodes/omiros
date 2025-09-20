@@ -11,6 +11,17 @@ pub struct Dock {
     pub autohide: Option<bool>,
     #[serde(rename = "icon-size")]
     pub icon_size: Option<i32>,
+    #[serde(rename = "transparent-hidden-app-icons")]
+    pub transparent_hidden_app_icons: Option<bool>,
+}
+
+/// Represents the Mission Control configuration.
+#[derive(Debug, Deserialize)]
+pub struct MissionControl {
+    #[serde(rename = "automatically-rearrange-spaces")]
+    pub automatically_rearrange_spaces: Option<bool>,
+    #[serde(rename = "group-apps")]
+    pub group_apps: Option<bool>,
 }
 
 /// Represents the Safari configuration.
@@ -41,7 +52,7 @@ pub enum MacOSError {
 }
 
 /// Applies the Dock settings.
-pub fn apply_dock_settings(dock: &Dock) -> Result<(), DefaultsError> {
+pub fn apply_dock_settings(dock: &Dock) -> Result<bool, DefaultsError> {
     let mut changed = false;
 
     if let Some(orientation) = dock.orientation {
@@ -56,14 +67,37 @@ pub fn apply_dock_settings(dock: &Dock) -> Result<(), DefaultsError> {
         changed |= write_defaults("com.apple.dock", "tilesize", icon_size)?;
     }
 
-    if changed {
-        println!("Restarting Dock to apply changes...");
-        Command::new("killall")
-            .arg("Dock")
-            .status()
-            .map_err(|e| DefaultsError::CommandFailed(format!("failed to kill Safari {e}")))?;
+    if let Some(showhidden) = dock.transparent_hidden_app_icons {
+        changed |= write_defaults("com.apple.dock", "showhidden", showhidden)?;
     }
 
+    Ok(changed)
+}
+
+/// Applies the Mission Control settings.
+pub fn apply_mission_control_settings(
+    mission_control: &MissionControl,
+) -> Result<bool, DefaultsError> {
+    let mut changed = false;
+
+    if let Some(rearrange) = mission_control.automatically_rearrange_spaces {
+        changed |= write_defaults("com.apple.dock", "mru-spaces", rearrange)?;
+    }
+
+    if let Some(group_apps) = mission_control.group_apps {
+        changed |= write_defaults("com.apple.dock", "expose-group-apps", group_apps)?;
+    }
+
+    Ok(changed)
+}
+
+/// Restarts the Dock.
+pub fn restart_dock() -> Result<(), DefaultsError> {
+    println!("Restarting Dock to apply changes...");
+    Command::new("killall")
+        .arg("Dock")
+        .status()
+        .map_err(|e| DefaultsError::CommandFailed(format!("failed to kill Dock {e}")))?;
     Ok(())
 }
 
