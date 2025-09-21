@@ -84,6 +84,12 @@ fn main() -> anyhow::Result<()> {
         if let Some(system) = macos.system {
             macos::apply_system_settings(&system)?;
         }
+        if let Some(magic_mouse) = macos.magic_mouse {
+            macos::apply_magic_mouse_settings(&magic_mouse)?;
+        }
+        if let Some(finder) = macos.finder {
+            macos::apply_finder_settings(&finder)?;
+        }
     } else {
         println!("ℹ️  No `[macos]` block in configuration file");
     }

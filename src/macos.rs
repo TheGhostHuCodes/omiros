@@ -2,42 +2,67 @@ use serde::Deserialize;
 use std::process::Command;
 use thiserror::Error;
 
-use crate::defaults::{DefaultsError, DockOrientation, write_defaults};
+use crate::defaults::{DefaultsError, DockOrientation, MouseButtonMode, write_defaults};
 
 /// Represents the Dock configuration.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct Dock {
     pub orientation: Option<DockOrientation>,
     pub autohide: Option<bool>,
-    #[serde(rename = "icon-size")]
     pub icon_size: Option<i32>,
-    #[serde(rename = "transparent-hidden-app-icons")]
     pub transparent_hidden_app_icons: Option<bool>,
 }
 
 /// Represents the Mission Control configuration.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct MissionControl {
-    #[serde(rename = "automatically-rearrange-spaces")]
     pub automatically_rearrange_spaces: Option<bool>,
-    #[serde(rename = "group-apps")]
     pub group_apps: Option<bool>,
 }
 
 /// Represents the Safari configuration.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct Safari {
-    #[serde(rename = "show-full-url")]
     pub show_full_url: Option<bool>,
 }
 
-/// Represents the system-wide configuration.
+/// System-wide configuration.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct SystemSettings {
-    #[serde(rename = "show-file-extensions")]
     pub show_file_extensions: Option<bool>,
-    #[serde(rename = "weird-mac-scrolling")]
+    /// Never have I experienced a more unnatural scrolling direction as Apple's
+    /// "natural" scrolling direction.
     pub natural_scrolling: Option<bool>,
+    /// Apple Press&Hold allows you to select alternative characters on long
+    /// presses. I've never used this feature, and it causes issues with vim
+    /// navigation.
+    pub key_press_and_hold: Option<bool>,
+    /// Delay before repetition starts. Lower value means shorter wait time
+    /// before repeat starts.
+    pub initial_key_repeat_wait: Option<i32>,
+    /// Rate at which keys are repeated once repetition starts. Lower value
+    /// means faster rate... for some reason.
+    pub key_repeat_rate: Option<i32>,
+}
+
+/// Magic Mouse configuration.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct MagicMouse {
+    pub mouse_button_mode: Option<MouseButtonMode>,
+}
+
+/// Finder configuration.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct Finder {
+    /// Display directory breadcrumbs at the bottom of the finder window.
+    pub show_pathbar: Option<bool>,
+    pub show_full_posix_path_in_title_bar: Option<bool>,
 }
 
 /// Represents the possible errors that can occur when applying macOS settings.
@@ -128,6 +153,8 @@ pub fn apply_safari_settings(safari: &Safari) -> Result<(), DefaultsError> {
 pub fn apply_system_settings(system: &SystemSettings) -> Result<(), DefaultsError> {
     let mut changed = false;
 
+    // TODO: we might want to move this over to the finder section, even though
+    // this is a global configuration, because it mainly affects Finder.
     if let Some(show_file_extensions) = system.show_file_extensions {
         changed |= write_defaults(
             "NSGlobalDomain",
@@ -142,7 +169,67 @@ pub fn apply_system_settings(system: &SystemSettings) -> Result<(), DefaultsErro
             "com.apple.swipescrolldirection",
             natural_scrolling,
         )?;
-        // System restart required. TODO: somehow signify that this needs to happen in the output.
+        // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
+    }
+
+    if let Some(key_press_and_hold) = system.key_press_and_hold {
+        write_defaults(
+            "NSGlobalDomain",
+            "ApplePressAndHoldEnabled",
+            key_press_and_hold,
+        )?;
+        // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
+    }
+
+    if let Some(initial_key_repeat_wait) = system.initial_key_repeat_wait {
+        write_defaults(
+            "NSGlobalDomain",
+            "InitialKeyRepeat",
+            initial_key_repeat_wait,
+        )?;
+        // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
+    }
+    if let Some(key_repeat_rate) = system.key_repeat_rate {
+        write_defaults("NSGlobalDomain", "KeyRepeat", key_repeat_rate)?;
+        // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
+    }
+
+    if changed {
+        println!("Restarting Finder to apply changes...");
+        Command::new("killall")
+            .arg("Finder")
+            .status()
+            .map_err(|e| DefaultsError::CommandFailed(format!("failed to kill Finder {e}")))?;
+    }
+
+    Ok(())
+}
+
+pub fn apply_magic_mouse_settings(magic_mouse: &MagicMouse) -> Result<(), DefaultsError> {
+    if let Some(mouse_button_mode) = magic_mouse.mouse_button_mode {
+        write_defaults(
+            "com.apple.AppleMultitouchMouse",
+            "MouseButtonMode",
+            mouse_button_mode,
+        )?;
+    }
+
+    Ok(())
+}
+
+pub fn apply_finder_settings(finder: &Finder) -> Result<(), DefaultsError> {
+    let mut changed = false;
+
+    if let Some(show_pathbar) = finder.show_pathbar {
+        changed |= write_defaults("com.apple.finder", "ShowPathbar", show_pathbar)?;
+    }
+
+    if let Some(show_full_posix_path_in_title_bar) = finder.show_full_posix_path_in_title_bar {
+        changed |= write_defaults(
+            "com.apple.finder",
+            "_FXShowPosixPathInTitle",
+            show_full_posix_path_in_title_bar,
+        )?;
     }
 
     if changed {

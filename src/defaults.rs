@@ -73,6 +73,36 @@ impl DefaultsType for DockOrientation {
     }
 }
 
+#[derive(Debug, Deserialize, PartialEq, Clone, Copy)]
+#[serde(rename_all = "kebab-case")]
+pub enum MouseButtonMode {
+    OneButton,
+    TwoButton,
+}
+
+impl std::fmt::Display for MouseButtonMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MouseButtonMode::OneButton => write!(f, "OneButton"),
+            MouseButtonMode::TwoButton => write!(f, "TwoButton"),
+        }
+    }
+}
+
+impl DefaultsType for MouseButtonMode {
+    const TYPE_FLAG: &'static str = "-string";
+
+    fn parse_output(s: &str) -> Result<Self, DefaultsError> {
+        match s {
+            "OneButton" => Ok(MouseButtonMode::OneButton),
+            "TwoButton" => Ok(MouseButtonMode::TwoButton),
+            s => Err(DefaultsError::ParseError(format!(
+                "Could not parse output: {s}"
+            ))),
+        }
+    }
+}
+
 /// Reads the configuration value stored by macOS by using the `defaults` CLI
 /// for particular `domain` and `key`.
 fn read_defaults<T>(domain: &str, key: &str) -> Result<T, DefaultsError>

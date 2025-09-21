@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::{
     brew::Brew,
     dotfiles::Dotfiles,
-    macos::{Dock, MissionControl, Safari, SystemSettings},
+    macos::{Dock, Finder, MagicMouse, MissionControl, Safari, SystemSettings},
     mas::Mas,
     vscode::Vscode,
 };
@@ -26,10 +26,12 @@ pub struct System {
 
 /// Represents all macOS-specific configuration.
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
 pub struct MacOS {
     pub dock: Option<Dock>,
     pub safari: Option<Safari>,
     pub system: Option<SystemSettings>,
-    #[serde(rename = "mission-control")]
     pub mission_control: Option<MissionControl>,
+    pub magic_mouse: Option<MagicMouse>,
+    pub finder: Option<Finder>,
 }
