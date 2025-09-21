@@ -16,6 +16,11 @@ It currently supports:
 - Setting some macOS system configuration, pretty much the ones that I care
   about.
 
+**NOTE:** `omiros` currently only installs software/extensions that are present
+in the configuration file and missing from the system. It does not yet remove
+packages that are present on the machine and absent from the configuration file.
+This safety constraint will probably be lifted in the future.
+
 ## Getting Started
 
 1.  **Create a `system.toml` file:**
