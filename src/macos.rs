@@ -47,6 +47,9 @@ pub struct SystemSettings {
     /// Rate at which keys are repeated once repetition starts. Lower value
     /// means faster rate... for some reason.
     pub key_repeat_rate: Option<i32>,
+    /// Automatically capitalizes the first letter of a new sentence and proper
+    /// nouns as you type. How annoying.
+    pub automatic_capitalization: Option<bool>,
 }
 
 /// Magic Mouse configuration.
@@ -189,9 +192,19 @@ pub fn apply_system_settings(system: &SystemSettings) -> Result<(), DefaultsErro
         )?;
         // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
     }
+
     if let Some(key_repeat_rate) = system.key_repeat_rate {
         write_defaults("NSGlobalDomain", "KeyRepeat", key_repeat_rate)?;
         // Logout, login, or System restart required. TODO: somehow signify that this needs to happen in the output.
+    }
+
+    if let Some(automatic_capitalization) = system.automatic_capitalization {
+        write_defaults(
+            "NSGlobalDomain",
+            "NSAutomaticCapitalizationEnabled",
+            automatic_capitalization,
+        )?;
+        // No logout or restart needed, update happens immediately.
     }
 
     if changed {
