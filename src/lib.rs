@@ -15,8 +15,8 @@ pub mod errors;
 pub mod macos;
 /// Contains the logic for interacting with the Mac App Store commandline tool.
 pub mod mas;
-/// Logic for setting up `rustup`.
-pub mod rustup;
+/// Logic for setting packages through shell installers.
+pub mod shell_installers;
 /// Defines the data structures for the system configuration file.
 pub mod system;
 /// Contains utility functions for interacting with the system.

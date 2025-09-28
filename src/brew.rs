@@ -9,6 +9,7 @@ const BREW_PROGRAM_NAME: &str = "brew";
 /// Represents the Homebrew configuration, specifying which formulae and casks to install.
 #[derive(Deserialize, Debug)]
 pub struct Brew {
+    // TODO: Both of these should be optional, so you don't have to declare them.
     formulae: Vec<String>,
     casks: Vec<String>,
 }

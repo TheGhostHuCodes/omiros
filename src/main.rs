@@ -10,7 +10,6 @@ use omiros::{
     dotfiles::setup_dotfiles,
     macos,
     mas::{check_mas_installed, find_missing_apps, get_installed_apps, install_missing_apps},
-    rustup::install_rustup,
     system::System,
 };
 
@@ -33,6 +32,19 @@ fn main() -> anyhow::Result<()> {
     let system_config = fs::read_to_string(system_config_path)?;
     let system: System = toml::from_str(&system_config)?;
 
+    // TODO: There's a chicken and egg problem here, some shell installers
+    // require curl or wget, or some other tooling, but at least for brew, we'll
+    // need to install that first before we have a macOS package manager. We
+    // might have to special-case the installation of brew first if requested
+    // for install.
+    if let Some(shell_installers) = system.shell_installers {
+        for installer in shell_installers.install {
+            installer.install()?;
+        }
+    } else {
+        println!("ℹ️  No `[shell-installers]` block in configuration file");
+    }
+
     if let Some(brew) = system.brew {
         check_brew_installed()?;
         let installed_packages = get_installed_brew_packages()?;
@@ -50,8 +62,6 @@ fn main() -> anyhow::Result<()> {
     } else {
         println!("ℹ️  No `[mas]` block in configuration file");
     }
-
-    install_rustup()?;
 
     if let Some(dotfiles) = system.dotfiles {
         setup_dotfiles(&dotfiles, &cli.dotfiles_dir.canonicalize()?)?;

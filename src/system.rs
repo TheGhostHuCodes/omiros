@@ -5,12 +5,14 @@ use crate::{
     dotfiles::Dotfiles,
     macos::{Dock, Finder, MagicMouse, MissionControl, Safari, SystemSettings},
     mas::Mas,
+    shell_installers::ShellInstaller,
     vscode::Vscode,
 };
 
 /// Represents the entire system configuration, including all package managers,
 /// and dotfiles.
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
 pub struct System {
     /// The Homebrew configuration.
     pub brew: Option<Brew>,
@@ -22,6 +24,8 @@ pub struct System {
     pub vscode: Option<Vscode>,
     /// The macOS configuration.
     pub macos: Option<MacOS>,
+    /// The shell installers configuration.
+    pub shell_installers: Option<ShellInstallers>,
 }
 
 /// Represents all macOS-specific configuration.
@@ -34,4 +38,11 @@ pub struct MacOS {
     pub mission_control: Option<MissionControl>,
     pub magic_mouse: Option<MagicMouse>,
     pub finder: Option<Finder>,
+}
+
+/// Represents all shell installers.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
+pub struct ShellInstallers {
+    pub install: Vec<ShellInstaller>,
 }

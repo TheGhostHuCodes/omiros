@@ -1,3 +1,7 @@
+//! Install `rustup` as recommend at <https://rustup.rs/>
+//! ```sh
+//! curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+//! ```
 use std::process::Command;
 
 use crate::{errors::SetupError, system_utils::command};
