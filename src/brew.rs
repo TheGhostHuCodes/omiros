@@ -9,9 +9,8 @@ const BREW_PROGRAM_NAME: &str = "brew";
 /// Represents the Homebrew configuration, specifying which formulae and casks to install.
 #[derive(Deserialize, Debug)]
 pub struct Brew {
-    // TODO: Both of these should be optional, so you don't have to declare them.
-    formulae: Vec<String>,
-    casks: Vec<String>,
+    formulae: Option<Vec<String>>,
+    casks: Option<Vec<String>>,
 }
 
 /// Represents the set of currently installed Homebrew packages.
@@ -40,15 +39,19 @@ pub fn find_missing_packages<'a>(
         casks: Vec::new(),
     };
 
-    for formula in &desired.formulae {
-        if !installed.formulae.contains(formula) {
-            missing.formulae.push(formula);
+    if let Some(formulae) = &desired.formulae {
+        for formula in formulae {
+            if !installed.formulae.contains(formula) {
+                missing.formulae.push(formula);
+            }
         }
     }
 
-    for cask in &desired.casks {
-        if !installed.casks.contains(cask) {
-            missing.casks.push(cask);
+    if let Some(casks) = &desired.casks {
+        for cask in casks {
+            if !installed.casks.contains(cask) {
+                missing.casks.push(cask);
+            }
         }
     }
 
